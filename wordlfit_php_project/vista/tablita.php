@@ -1,64 +1,27 @@
-<!DOCTYPE html>
-<html lang="es">
+<?PHP
+include ("../model/mostrarUsuarios.php");
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tabla con CSS</title>
-    <link rel="stylesheet" href="css/tablita.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/boxicons@latest/css/boxicons.min.css">
+?>
+<link rel="stylesheet" href="css/tablita.css">
 
-</head>
 
-<body>
+<div class="container">
 
-    <table>
+<h1>Total de usuario: <?php echo MostrarUsuarios::getUsuarios(1) ?> </h1>
+    <table class="table">
         <thead>
             <tr>
-                <th>Nombre</th>
-                <th>Apellido</th>
-                <th>Correo</th>
-                <th>Fecha de ingreso</th>
-                <th>Acciones</th> 
+                <th scope="col">ID Usuario</th>
+                <th scope="col">Nombres</th>
+                <th scope="col">Apellidos</th>
+                <th scope="col">Correo</th>
+                <th scope="col">Telefono</th>
+                <th scope="col">Genero</th>
+                <th scope="col">Fecha de ingreso</th>
             </tr>
         </thead>
         <tbody>
-            <tr>
-                <td>Pepe</td>
-                <td>Pollo</td>
-                <td>pollitosalsa@hdhweysn.com</td>
-                <td>14/6/2024</td>
-                <td class="acciones">
-                    <i class='bx bxs-trash'></i>
-                    <i class='bx bxs-edit-alt'></i>
-                </td> 
-            </tr>
-
-            <tr>
-                <td>Ricardo</td>
-                <td>Pollo</td>
-                <td>pollitosalsa@hdhweysn.com</td>
-                <td>14/6/2024</td>
-                <td class="acciones">
-                    <i class='bx bxs-trash'></i>
-                    <i class='bx bxs-edit-alt'></i>
-                </td> 
-            </tr>
-
-
-            <tr>
-                <td>moor</td>
-                <td>sandwich</td>
-                <td>tomate@hdhweysn.com</td>
-                <td>14/6/2024</td>
-                <td class="acciones">
-                    <i class='bx bxs-trash'></i>
-                    <i class='bx bxs-edit-alt'></i>
-                </td> 
-            </tr>
+            <?php echo MostrarUsuarios::getUsuarios(0) ?>
         </tbody>
     </table>
-
-</body>
-
-</html>
+</div>
