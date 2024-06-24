@@ -1,121 +1,211 @@
 <?php
 include ("connect.php");
-//esta es la clase USUARIOS que hereda la clase conexionBD, contiene funciones como: autenticacion , getperfil y registrar.
 class usuarios extends conexionBD
 {
 
-    /**
-     * Funcion para autenticarse
-     * 
-     * @parametro $opc escoge la opcion a mostrar. $correo = correo del usuario. $contraseña= contraseña del usuario
-     * con esos parametros se realizara la utenticacion del usuario.
-     * 
-     */
 
-    public static function iniciarSesion($opc, $correo = null, $contraseña = null) //funcion de autenticacion, la funcion es publica y estatica contiene los parametros $opc, $correo, $contraseña. 
+    public static function getInformacion($opc, $id_usuario)
     {
+        $conexion = conexionBD::getConexion();
 
-        $conexion = conexionBD::getConexion(); //variable conexion donde llama a la clase conexionBD y el metodo getConexion
+        $sql = "select * from usuarios WHERE id_usuario = $id_usuario ";
 
-        $sql = "select t1.id_usuario, count(*) FROM usuarios t1 WHERE correo = '$correo' AND contraseña = '$contraseña'; ";//script sql, selecciona datos de la tabla usuarios y cuenta cuantas veces aparece el valor de id_usuario donde correo cumpla con una condicion.
+        $resultado = $conexion->query($sql);
+        $salida = '';
+        while ($fila = $resultado->fetch_array()) {
 
-        $resultado = $conexion->query($sql); //variable resultado donde ejecuta una consulta SQL utilizando la conexión $conexion y guarda el resultado en $resultado para su procesamiento posterior.
-
-        $r = 0; // r= resultado inicializada en 0 
-
-        while ($fila = $resultado->fetch_array()) { // ciclo while donde fila sea igual a la variable resultado de la conexcion y el fetch array para mostrar informacion de la base de datos.
-            if ($opc == 0) {  // condicion
-                $r = $fila[1]; //resultado de la condicion donde muestra la fila 1 
-            } elseif ($opc == 1) { //sino se cumple la condicion ejecuta otra mediante el 1 
-                $r = $fila[0]; //resultado de la condicion, donde mostrara la fila 0
+            switch ($opc) {
+                case 0: // Trae el id_usuario
+                    $salida = $fila[0];
+                    break;
+                case 1: // Trae el nombre
+                    $salida = $fila[1];
+                    break;
+                case 2: // Trae el Apillidos
+                    $salida = $fila[2];
+                    break;
+                case 3: // Trae el Correo
+                    $salida = $fila[3];
+                    break;
+                case 4: // Trae el Contraseña
+                    $salida = $fila[4];
+                    break;
+                case 5: // Trae el peso
+                    $salida = $fila[5];
+                    break;
+                case 6: // Trae el alura
+                    $salida = $fila[6];
+                    break;
+                case 7: // Trae el id_genero
+                    $salida = $fila[7];
+                    break;
+                case 8: // Trae el telefono
+                    $salida = $fila[8];
+                    break;
+                case 9: // Trae el Pr
+                    $salida = $fila[9];
+                    break;
+                case 10: // Trae el Fecha registro
+                    $salida = $fila[10];
+                    break;
+                case 11: // Trae el Fecha Url_Imagen perfil
+                    $salida = $fila[10];
+                    break;
             }
         }
-
-        return $r; //retorno de la funcion 
+        return $salida;
     }
 
 
-    /* funcion getPerfil donde se mostrara en la interfaz de mi perfil, la informacion del usuario traida desde la base de datos. 
-     * 
-     * 
-     * @parametros $opc= escoge la opcion a mostrar. $correoU= correo del usuario donde se utilizara como identificador
-     *
-     * */
 
-    public static function getPerfil($opc, $correoU) //funcion llamada getPerfil donde contiene parametros $opc, $correoU
+    public static function buscarId($correo)
     {
-        $conexion = self::getConexion(); //obtiene una conexión utilizando un método estático llamando al metodo getConexion
+        $conexion = conexionBD::getConexion();
 
-        $sql = "select t1.nombre, t1.apellido, t1.correo, t1.contraseña, t1.peso_actual, t1.altura_actual, t1.pr, t1.telefono, t2.genero ";
-        $sql .= "FROM usuarios t1 JOIN genero t2 ON t1.id_genero = t2.id_genero WHERE correo = '$correoU'"; //script sql realiza una consulta SQL que selecciona información detallada de usuarios y su género a partir de una unión entre tablas, filtrando por el correo electrónico proporcionado en $correoU.
+        $sql = "select id_usuario from usuarios where correo = '$correo' ";
 
-        $resultado = $conexion->query($sql); //variable resultado donde ejecuta una consulta SQL utilizando la conexión $conexion y guarda el resultado en $resultado para su procesamiento posterior.
+        $resultado = $conexion->query($sql);
+        $salida = 0;
+        while ($fila = $resultado->fetch_array()) {
+            $salida += $fila[0];
+        }
+        return $salida;
+    }
 
-        while ($fila = $resultado->fetch_array()) { //ciclo while recorre cada fila del resultado obtenido de una consulta, asignando cada fila a la variable
-            $r = ''; //inicializa la variable
+    public static function iniciarSesion($opc, $correo, $password)
+    {
 
-            switch ($opc) { //utiliza una estructura llamada switch para seleccionar y juntar valores  especificos de la lista llamada datos dependiendo de la opc
-                case 0: //
+        $conexion = conexionBD::getConexion();
+
+        $sql = "SELECT COUNT(*), id_rol FROM usuarios WHERE correo = '$correo' AND password = '$password' ";
+
+        echo $sql;
+        $resultado = $conexion->query($sql);
+
+        $r = 0;
+
+        while ($fila = $resultado->fetch_array()) {
+
+            switch ($opc) {
+                case 0:
+                    $r = $fila[0];
+                    break;
+
+                case 1:
+
+                    $r = $fila[1];
+                    break;
+            }
+
+        }
+
+        return $r;
+    }
+
+
+    public static function getPerfil($opc, $idUsuario)
+    {
+        $conexion = self::getConexion();
+
+        $sql = "select t1.nombre, t1.apellido, t1.correo, t1.password, t1.peso_actual, t1.altura_actual, t1.pr, t1.telefono, t2.genero, t1.imgPerfil ";
+        $sql .= "FROM usuarios t1 JOIN genero t2 ON t1.id_genero = t2.id_genero WHERE id_usuario = $idUsuario";
+        $resultado = $conexion->query($sql);
+        $r = '';
+        while ($fila = $resultado->fetch_array()) {
+
+
+            switch ($opc) {
+                case 0: // Muestra NOMBRE
 
                     $r .= $fila[0];
+                    //$r = self::getInformacion(1, $idUsuario); Opción a implementar.
 
                     break;
-                case 1:
+                case 1: // Muestra APELLIDO
 
                     $r .= $fila[1];
 
                     break;
-                case 5:
-
-                    $r .= $fila[5];
-
-                    break;
-                case 4:
-
-                    $r .= $fila[4];
-
-                    break;
-                case 8:
-
-                    $r .= $fila[8];
-
-                    break;
-                case 6:
-
-                    $r .= $fila[6];
-
-                    break;
-                case 2:
+                case 2: // Muestra CORREO
 
                     $r .= $fila[2];
 
                     break;
-                case 7:
+                case 3: // Muestra CONTRASEÑA
+
+                    $r .= $fila[3];
+
+                    break;
+                case 4: // Muestra PESO
+
+                    $r .= $fila[4];
+
+                    break;
+                case 5: // Muestra ALTURA
+
+                    $r .= $fila[5];
+
+                    break;
+                case 6: // Muestra PR
+
+                    $r .= $fila[6];
+
+                    break;
+                case 7: // Muestra TELEFONO
 
                     $r .= $fila[7];
 
                     break;
+                case 8: // Muestra GENERO
+
+                    $r .= $fila[8];
+
+                    break;
+                case 9: // Muestra la ruta de la imagen de perfil.
+
+                    $r .= $fila[9];
+
+                    break;
             }
-
-
         }
-
-        return $r; //retorno de la funcion 
+        return $r;
     }
 
 
-    public static function registrar($nombres, $apellidos, $telefono, $correoElectronico, $contraseña, $pesoActual, $altura, $genero)
+    public static function registrar($nombres, $apellidos, $telefono, $correoElectronico, $password, $pesoActual, $altura, $genero)
     {
         $conexion = self::getConexion();
 
-        $sql = "insert into usuarios (nombre, apellido, telefono, correo, contraseña, peso_actual, altura_actual, id_genero, fecha_registro)";
-        $sql .= "values ('$nombres' ,'$apellidos', $telefono, '$correoElectronico', '$contraseña', $pesoActual ,$altura, $genero, now())";
+        $sql = "insert into usuarios (nombre, apellido, telefono, correo, password, peso_actual, altura_actual, id_genero, fecha_registro, id_rol)";
+        $sql .= " values ('$nombres' ,'$apellidos', '$telefono', '$correoElectronico', '$password', $pesoActual ,$altura, $genero, now(), 0) ";
+        echo $sql;
         $resultado = $conexion->query($sql);
 
         $affected_rows = $conexion->affected_rows;
 
         $conexion->close();
-
     }
 
+
+    public static function actualizarDatos($id, $nombres, $apellidos, $telefono, $correo, $pr, $pesoActual, $altura, $ruta_imagen)
+    {
+        $conexion = self::getConexion();
+
+        $sql = "update usuarios ";
+        $sql .= "set nombre = '$nombres', ";
+        $sql .= "imgPerfil = '$ruta_imagen', ";
+        $sql .= "apellido = '$apellidos', ";
+        $sql .= "peso_actual = $pesoActual, ";
+        $sql .= "altura_actual = $altura, ";
+        $sql .= "telefono = '$telefono', ";
+        $sql .= "correo = '$correo', ";
+        $sql .= "pr = $pr ";
+        $sql .= "WHERE id_usuario = '$id' ";
+        echo $sql;
+        $conexion->query($sql);
+
+        $affected_rows = $conexion->affected_rows;
+
+        $conexion->close();
+    }
 }
